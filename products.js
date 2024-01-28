@@ -24,6 +24,8 @@ const app = createApp({
     const isNew = ref(false);
     const pModal = ref(null);
     const dModal = ref(null);
+    /*composition API 中，欲使用ref取得DOM元素，需先創建空的ref，
+    名稱與模板中定義的ref屬性值相同，在onMounted階段後便會取得對應的DOM元素，記得return*/
 
     const checkAdmin = () => {
       const url = `${apiUrl}/api/user/check`;
@@ -57,7 +59,7 @@ const app = createApp({
       if (type === "new") {
         tempProduct.value = { imagesUrl: [] };
         isNew.value = true;
-        pModal.value.openModal();
+        pModal.value.openModal(); //利用ref取得元件的DOM元素，從而呼叫元件中的方法
       } else if (type === "edit") {
         tempProduct.value = { ...item };
         isNew.value = false;
@@ -75,7 +77,6 @@ const app = createApp({
       );
       axios.defaults.headers.common.Authorization = token;
       checkAdmin();
-      console.log(pModal.value);
     });
 
     return {
@@ -83,111 +84,12 @@ const app = createApp({
       tempProduct,
       pagination,
       isNew,
-      pModal,
+      pModal, //記得return
       dModal,
       getData,
       openModal,
     };
   },
 });
-
-// 產品新增/編輯元件
-// app.component("productModal", {
-//   template: "#productModal",
-//   props: ["isNew", "product"],
-//   setup(props, { emit }) {
-//     const apiUrl = "https://vue3-course-api.hexschool.io/v2";
-//     const apiPath = "hexschoolvue";
-
-//     const updateProduct = () => {
-//       let api = `${apiUrl}/api/${apiPath}/admin/product`;
-//       let httpMethod = "post";
-
-//       if (!props.isNew) {
-//         api = `${apiUrl}/api/${apiPath}/admin/product/${props.product.id}`;
-//         httpMethod = "put";
-//       }
-
-//       axios[httpMethod](api, { data: props.product })
-//         .then((response) => {
-//           alert(response.data.message);
-//           hideModal();
-//           emit("update");
-//         })
-//         .catch((err) => {
-//           alert(err.response.data.message);
-//         });
-//     };
-
-//     const createImages = () => {
-//       props.product.imagesUrl = [];
-//       props.product.imagesUrl.push("");
-//     };
-
-//     const hideModal = () => {
-//       productModal.hide();
-//     };
-
-//     onMounted(() => {
-//       productModal = new bootstrap.Modal(
-//         document.getElementById("productModal"),
-//         {
-//           keyboard: false,
-//           backdrop: "static",
-//         }
-//       );
-//     });
-
-//     return {
-//       updateProduct,
-//       createImages,
-//     };
-//   },
-// });
-
-// 產品刪除元件
-// app.component("delProductModal", {
-//   template: "#delProductModal",
-//   props: ["item"],
-//   setup(props, { emit }) {
-//     const apiUrl = "https://vue3-course-api.hexschool.io/v2";
-//     const apiPath = "hexschoolvue";
-
-//     const delProduct = () => {
-//       axios
-//         .delete(`${apiUrl}/api/${apiPath}/admin/product/${props.item.id}`)
-//         .then(() => {
-//           emit("update");
-//           hideModal();
-//         })
-//         .catch((err) => {
-//           alert(err.response.data.message);
-//         });
-//     };
-
-//     const openModal = () => {
-//       delProductModal.show();
-//     };
-
-//     const hideModal = () => {
-//       delProductModal.hide();
-//     };
-
-//     onMounted(() => {
-//       delProductModal = new bootstrap.Modal(
-//         document.getElementById("delProductModal"),
-//         {
-//           keyboard: false,
-//           backdrop: "static",
-//         }
-//       );
-//     });
-
-//     return {
-//       delProduct,
-//       openModal,
-//     };
-//   },
-// });
 
 app.mount("#app");
